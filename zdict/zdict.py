@@ -121,7 +121,11 @@ def normal_mode():
     for word in args.words:
         for d in args.dict:
             zdict = dictionary_map[d]()
-            zdict.lookup(word, args)
+            zdict.lookup(word, query_timeout=args.query_timeout,
+                               disable_db_cache=args.disable_db_cache,
+                               show_provider=args.show_provider,
+                               show_url=args.show_url,
+                               verbose=args.verbose)
 
 
 class MetaInteractivePrompt():
@@ -138,7 +142,13 @@ class MetaInteractivePrompt():
             return
 
         for dictionary_instance in self.dicts:
-            dictionary_instance.lookup(user_input, args)
+            dictionary_instance.lookup(
+                user_input, 
+                query_timeout=args.query_timeout,
+                disable_db_cache=args.disable_db_cache,
+                show_provider=args.show_provider,
+                show_url=args.show_url,
+                verbose=args.verbose)
 
     def loop_prompt(self, args):
         while True:

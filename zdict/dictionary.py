@@ -86,28 +86,29 @@ class DictBase(metaclass=abc.ABCMeta):
     def show_url(self, word):
         self.color.print('(' + self._get_url(word) + ')', 'blue')
 
-    def lookup(self, word, args):
+    def lookup(self, word, query_timeout, disable_db_cache=False,
+               show_provider=False, show_url=False, verbose=False):
         '''
         Main workflow for searching a word.
         '''
 
         word = word.lower()
 
-        if args.show_provider:
+        if show_provider:
             self.show_provider()
 
-        if args.show_url:
+        if show_url:
             self.show_url(word)
 
-        if not args.disable_db_cache:
+        if not disable_db_cache:
             record = self.query_db_cache(word)
 
             if record:
-                self.show(record, args.verbose)
+                self.show(record, verbose)
                 return
 
         try:
-            record = self.query(word, args.query_timeout, args.verbose)
+            record = self.query(word, query_timeout, verbose)
         except exceptions.NoNetworkError as e:
             self.color.print(e, 'red')
         except exceptions.TimeoutError as e:
@@ -116,7 +117,7 @@ class DictBase(metaclass=abc.ABCMeta):
             self.color.print(e, 'yellow')
         else:
             self.save(record, word)
-            self.show(record, args.verbose)
+            self.show(record, verbose)
             return
 
     def _get_raw(self, word: str, timeout: float) -> str:
